@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Toki — Japanese LCD Desk Clock</title>
+<style>
+html,body{margin:0;width:100%;height:100%;background:#e9e5dc;color:#343b35;font-family:Arial,Helvetica,sans-serif}
+body{display:table}
+.stage{display:table-cell;vertical-align:middle;text-align:center;padding:18px;box-sizing:border-box}
+.clock{width:96%;max-width:980px;margin:0 auto;background:#d5d1c8;border:1px solid #bcb8ae;border-radius:30px;padding:18px;box-sizing:border-box;box-shadow:0 16px 32px rgba(45,48,42,.18),inset 0 2px 2px rgba(255,255,255,.7)}
+.bezel{background:#353b37;border-radius:22px;padding:13px;box-shadow:inset 0 3px 7px rgba(0,0,0,.45)}
+.screen{background:#e5e8dd;border:2px solid #aeb5a8;border-radius:12px;padding:18px 22px 14px;box-sizing:border-box;box-shadow:inset 0 2px 9px rgba(42,52,43,.16);position:relative;overflow:hidden}
+.screen:before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:rgba(255,255,255,.35)}
+.topline{display:flex;align-items:center;justify-content:space-between;color:#707a6e;font-size:12px;letter-spacing:3px;margin-bottom:5px}
+.brand{font-weight:bold;letter-spacing:4px}
+.sunmark{display:inline-block;width:11px;height:11px;border-radius:50%;background:#b7a77e;margin-right:7px;vertical-align:-1px;box-shadow:0 0 0 4px rgba(183,167,126,.15)}
+.time-row{display:flex;align-items:center;justify-content:center;gap:10px;min-height:205px;padding:2px 0 14px}
+.ampm{font-size:clamp(18px,3vw,28px);font-weight:bold;letter-spacing:1px;color:#626e62;align-self:center;margin-right:8px}
+.digits{display:flex;align-items:center;gap:clamp(3px,1vw,12px);font-variant-numeric:tabular-nums}
+.digit{width:clamp(55px,11vw,112px);height:clamp(105px,19vw,190px);overflow:visible;font-variant-numeric:tabular-nums}
+.seg{fill:#354039;opacity:.05}
+.seg.on{opacity:1}
+.colon{width:clamp(9px,1.5vw,17px);height:clamp(90px,16vw,155px);position:relative}
+.colon:before,.colon:after{content:"";position:absolute;left:0;width:100%;height:10%;background:#354039;border-radius:3px}
+.colon:before{top:28%}.colon:after{top:66%}
+.seconds{font-size:clamp(24px,4vw,42px);font-weight:600;color:#59665b;align-self:flex-end;padding-bottom:23px;margin-left:3px;font-variant-numeric:tabular-nums}
+.rule{height:1px;background:#aeb6a9;margin:0 0 12px}
+.info{display:flex;align-items:stretch;text-align:left}
+.cell{flex:1;padding:8px 14px 5px;border-right:1px solid #b4bbae;min-width:0}
+.cell:last-child{border-right:0}
+.label{font-size:clamp(10px,1.5vw,14px);letter-spacing:2px;color:#758071;font-weight:bold;margin-bottom:8px}
+.value{font-size:clamp(25px,4.5vw,48px);font-weight:600;letter-spacing:1px;color:#3b463d;white-space:nowrap}
+.sub{font-size:12px;color:#7b8577;margin-top:3px;letter-spacing:1px}
+.weatherline{font-size:clamp(13px,2vw,20px);letter-spacing:0}
+.footer{display:flex;justify-content:space-between;align-items:center;margin-top:13px;color:#778173;font-size:10px;letter-spacing:2px}
+.controls{margin:12px auto 0;display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+input,button{font:14px Arial,sans-serif;padding:8px 10px;border:1px solid #b8b7aa;border-radius:7px;background:#f2f0e9;color:#3d493f}
+button{cursor:pointer}
+.status{font:11px Arial,sans-serif;color:#777d72;margin-top:8px}
+@media(max-width:600px){
+ .clock{padding:9px;border-radius:20px}.bezel{padding:7px;border-radius:15px}.screen{padding:12px 9px 9px}
+ .time-row{min-height:130px;gap:4px}.digit{width:clamp(36px,11vw,65px);height:clamp(70px,19vw,115px)}
+ .seconds{padding-bottom:14px}.cell{padding:6px 7px}.value{font-size:clamp(19px,4.5vw,30px)}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+<div class="clock"><div class="bezel"><div class="screen">
+ <div class="topline"><span class="brand"><i class="sunmark"></i>TOKI <span style="font-weight:normal">時</span></span><span>DESK CLOCK · 01</span></div>
+ <div class="time-row"><div class="ampm" id="ampm">PM</div><div class="digits" id="digits"></div><div class="seconds" id="seconds">00</div></div>
+ <div class="rule"></div>
+ <div class="info">
+  <div class="cell"><div class="label">TEMP / 天気</div><div class="value weatherline" id="temp">--°</div><div class="sub" id="condition">SET CITY BELOW</div></div>
+  <div class="cell"><div class="label">DAY / 曜日</div><div class="value" id="day">TUE</div><div class="sub" id="weekdayjp">WEEKDAY</div></div>
+  <div class="cell"><div class="label">MONTH / 月</div><div class="value" id="month">NOV</div><div class="sub" id="monthjp">11</div></div>
+  <div class="cell"><div class="label">DATE / 日</div><div class="value" id="date">17</div><div class="sub" id="year">2026</div></div>
+ </div>
+ <div class="footer"><span id="location">LOCAL WEATHER</span><span>静かな時間 · QUIET TIME</span></div>
+</div></div></div>
+<div class="controls"><input id="city" value="West Jordan" aria-label="Weather city"><button onclick="loadWeather()">Update weather</button></div>
+<div class="status" id="status">CLOCK RUNS OFFLINE · WEATHER NEEDS WI-FI</div>
+</div>
+<script>
+(function(){
+var patterns={
+0:[1,1,1,1,1,1,0],1:[0,1,1,0,0,0,0],2:[1,1,0,1,1,0,1],3:[1,1,1,1,0,0,1],4:[0,1,1,0,0,1,1],
+5:[1,0,1,1,0,1,1],6:[1,0,1,1,1,1,1],7:[1,1,1,0,0,0,0],8:[1,1,1,1,1,1,1],9:[1,1,1,1,0,1,1]};
+var paths=["M15 8 L75 8 L68 16 L22 16 Z","M78 12 L86 20 L86 82 L78 90 L72 82 L72 20 Z","M78 98 L86 106 L86 168 L78 176 L72 168 L72 106 Z","M15 174 L75 174 L68 182 L22 182 Z","M8 98 L16 106 L16 168 L8 176 L2 168 L2 106 Z","M8 12 L16 20 L16 82 L8 90 L2 82 L2 20 Z","M15 91 L22 84 L68 84 L75 91 L68 99 L22 99 Z"];
+function makeDigit(n){var s='<svg class="digit" viewBox="0 0 90 190" aria-hidden="true">';for(var i=0;i<7;i++)s+='<path class="seg '+(patterns[n][i]?'on':'')+'" d="'+paths[i]+'"/>';return s+'</svg>';}
+var host=document.getElementById("digits"),last="";
+function update(){
+ var d=new Date(),h=d.getHours(),m=d.getMinutes(),s=d.getSeconds(),amp=h>=12?"PM":"AM",hh=h%12;if(hh===0)hh=12;
+ var value=(hh<10?"0":"")+hh+":"+(m<10?"0":"")+m;
+ if(value!==last){host.innerHTML=makeDigit(parseInt(value.charAt(0),10))+makeDigit(parseInt(value.charAt(1),10))+'<div class="colon"></div>'+makeDigit(parseInt(value.charAt(3),10))+makeDigit(parseInt(value.charAt(4),10));last=value;}
+ document.getElementById("ampm").innerHTML=amp;document.getElementById("seconds").innerHTML=(s<10?"0":"")+s;
+ var days=["SUN","MON","TUE","WED","THU","FRI","SAT"],months=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+ document.getElementById("day").innerHTML=days[d.getDay()];document.getElementById("weekdayjp").innerHTML=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
+ document.getElementById("month").innerHTML=months[d.getMonth()];document.getElementById("monthjp").innerHTML=(d.getMonth()+1<10?"0":"")+(d.getMonth()+1);
+ document.getElementById("date").innerHTML=d.getDate()<10?"0"+d.getDate():d.getDate();document.getElementById("year").innerHTML=d.getFullYear();
+}
+update();setInterval(update,1000);
+window.loadWeather=function(){
+ var city=document.getElementById("city").value,x=new XMLHttpRequest();
+ document.getElementById("status").innerHTML="FETCHING WEATHER…";
+ x.onreadystatechange=function(){if(x.readyState===4){try{var g=JSON.parse(x.responseText);if(!g.results||!g.results.length)throw 0;var p=g.results[0],y=new XMLHttpRequest();
+ y.onreadystatechange=function(){if(y.readyState===4){try{var w=JSON.parse(y.responseText),c=w.current_weather,code=c.weathercode,desc=code===0?"CLEAR":(code<3?"PARTLY CLOUDY":(code===3?"CLOUDY":(code<50?"FOG":(code<70?"RAIN":(code<80?"SNOW":(code<90?"SHOWERS":"STORM"))))));
+ document.getElementById("temp").innerHTML=Math.round(c.temperature)+"°";document.getElementById("condition").innerHTML=desc;document.getElementById("location").innerHTML=p.name.toUpperCase();document.getElementById("status").innerHTML="WEATHER UPDATED · "+new Date().toLocaleTimeString();
+ }catch(e){document.getElementById("status").innerHTML="WEATHER UNAVAILABLE";}}};
+ y.open("GET","https://api.open-meteo.com/v1/forecast?latitude="+p.latitude+"&longitude="+p.longitude+"&current_weather=true",true);y.send();
+ }catch(e){document.getElementById("status").innerHTML="CITY NOT FOUND — TRY ANOTHER CITY";}}};
+ x.open("GET","https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(city)+"&count=1&language=en&format=json",true);x.send();
+};
+})();
+</script></body></html>
